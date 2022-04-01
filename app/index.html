@@ -1,0 +1,130 @@
+<html>
+
+<script>
+    function sendMessage() {
+        let sender = document.getElementById("nameInput").value
+        let messageText = document.getElementById("messageInput").value
+
+        console.log(sender)
+        console.log(messageText)
+
+        if (sender === "" || messageText === "") {
+            document.getElementById("errorText").innerHTML = "Enter a name AND message!"
+            return
+        }
+
+        let messageObj = { sender: sender, msgText: messageText }
+        let url = "./sendMessage";
+
+        fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(messageObj)
+        })
+            .then(response => {
+                response.json().then(val => { console.log(val) })
+            })
+            .catch(reason => { console.error(reason) })
+
+        document.getElementById("nameInput").value = ""
+        document.getElementById("messageInput").value = ""
+    }
+
+    function getMessages() {
+        let messages = []
+        let url = "./getMessages"
+
+        fetch(url, { method: "GET" })
+            .then(response => {
+                response.json().then(data => {
+                    if (data !== undefined) {
+                        console.log(data)
+                        data.forEach(m => {
+                            console.log(m)
+                            messages.push(m)
+                        })
+                    } else {
+                        throw "Messages undefined"
+                    }
+
+                    let messageList = document.getElementById("messageList")
+                    if (messages.length > 0) {
+                        messages.forEach(m => {
+                            let messageString = m.sender + ": " + m.msgText
+                            let messageItem = document.createElement("li")
+                            messageItem.innerHTML = messageString
+                            messageList.appendChild(messageItem)
+                        })
+                    } else {
+                        let messageItem = document.createElement("li")
+                        messageItem.innerHTML = "No messages I guess"
+                        messageList.appendChild(messageItem)
+                    }
+                })
+                    .catch(reason => {
+                        console.error(reason)
+                    })
+            })
+            .catch(reason => {
+                console.error(reason)
+            })
+    }
+</script>
+
+<style>
+    .appContainer {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .containerItem {
+        justify-content: space-between;
+        background-color: slategray;
+        margin: 4px;
+        padding: 4px;
+    }
+
+    #messageList {
+        height: 300px;
+        width: 400px;
+        background-color: lightgray;
+        border-style: inset;
+        border: 4px;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        overflow-y: scroll
+    }
+
+    img {
+        height: 240px;
+    }
+
+    input {
+        display: block;
+    }
+</style>
+
+<body onload="getMessages()">
+    <div class="appContainer">
+        <img src="messages-logo" />
+        <div class="containerItem">
+            <ul id="messageList"></ul>
+        </div>
+        <div>
+            <p id="errorText"></p>
+        </div>
+        <div class="containerItem">
+            <label for="nameInput">Name</label>
+            <input id="nameInput" type="text" />
+            <label for="messageInput">Message</label>
+            <input id="messageInput" type="text" />
+            <button onClick="sendMessage()">Send</button>
+        </div>
+    </div>
+</body>
+
+</html>
