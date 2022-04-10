@@ -6,6 +6,8 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=admin
       - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - msg-data:/data/db
   mongo-express:
     image: mongo-express
     restart: always
@@ -18,8 +20,11 @@ services:
     depends_on:
       - mongodb
   docker-messages:
-    image: docker-messages:latest
+    image: 970113208363.dkr.ecr.us-east-2.amazonaws.com/docker-messages:latest
     depends_on:
       - mongodb
     ports:
       - 3000:3000
+volumes:
+  msg-data:
+    driver: local
