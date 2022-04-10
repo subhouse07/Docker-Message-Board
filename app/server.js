@@ -64,7 +64,7 @@ app.post("/sendMessage", (req, res) => {
                 if (err) throw error;
                 console.log("Message inserted");
                 client.close()
-                res.send(messageObj.messageTxt)
+                res.send(messageObj)
             })
         }
     )
